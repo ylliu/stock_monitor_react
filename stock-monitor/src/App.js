@@ -3,6 +3,8 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import StockTable from './components/StockTable';
 import StockConfig from './components/StockConfig';
 import StockHistory from './components/StockHistory';
+import StockCommand from './components/StockCommand';
+
 
 const mockStockData = [
   { id: 1, code: '000001', name: 'Tencent', price: 500.0 },
@@ -27,7 +29,14 @@ function App() {
   return (
     <div className="container-fluid">
       <h1 className="my-4">Stock Monitor</h1>
-      <StockConfig />
+      <div className="row">
+        <div className="col-md-9">
+          <StockConfig />
+        </div>
+        <div className="col-md-3">
+          <StockCommand />
+        </div>
+      </div>
       <div className="row" style={{ marginBottom: '10%' }}>
         <div className="col-md-8">
           <div className="card h-100">

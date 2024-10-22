@@ -104,10 +104,10 @@ const StockConfig = () => {
               <input type="number" className="form-control text-left" value={config.first_day_vol_ratio}  onChange={(e) => handleConfigChange({ ...config, first_day_vol_ratio: e.target.value })} />
             </div>
             <div className="col-sm-1">
-              <button onClick={incrementFirstDayVolRatio} className="btn btn-primary">+</button>
+              <button onClick={incrementFirstDayVolRatio} className="btn btn-primary me-2">+</button>
             </div>
             <div className="col-sm-1">
-              <button onClick={decrementFirstDayVolRatio} className="btn btn-danger">-</button>
+              <button onClick={decrementFirstDayVolRatio} className="btn btn-danger ms-2">-</button>
             </div>
           </div>
         </div>
@@ -159,10 +159,10 @@ const StockConfig = () => {
               />
             </div>
             <div className="col-sm-1">
-              <button onClick={incrementMa10Ratio} className="btn btn-primary">+</button>
+              <button onClick={incrementMa10Ratio} className="btn btn-primary me-2">+</button>
             </div>
             <div className="col-sm-1">
-              <button onClick={decrementMa10Ratio} className="btn btn-danger">-</button>
+              <button onClick={decrementMa10Ratio} className="btn btn-danger  ms-2">-</button>
             </div>
           </div>
         </div>
