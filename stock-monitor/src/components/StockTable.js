@@ -1,31 +1,59 @@
 import React, { useState, useEffect } from 'react';
+import './StockTable.css'; // 引入 CSS 文件
 
 const StockTable = ({ date }) => {
   const [stocks, setStocks] = useState([]);
   const [sortColumn, setSortColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState(null);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [expandedRows, setExpandedRows] = useState({}); // 用于记录每行是否展开
+
+  // 比较两个对象是否相等（用于比较行数据）
+  const isRowDataChanged = (oldRow, newRow) => {
+    return (
+      oldRow.stock_code !== newRow.stock_code ||
+      oldRow.stock_name !== newRow.stock_name ||
+      oldRow.price !== newRow.price ||
+      oldRow.change !== newRow.change ||
+      oldRow.below_5_day_line !== newRow.below_5_day_line ||
+      oldRow.below_10_day_line !== newRow.below_10_day_line ||
+      oldRow.concept !== newRow.concept
+    );
+  };
 
   useEffect(() => {
     const fetchStocks = async () => {
-      setLoading(true);
-      setError(null); // Reset error state before fetching
       try {
         const response = await fetch(`http://127.0.0.1:5000/monitor_records/${date}`);
         if (!response.ok) {
           throw new Error('Network response was not ok');
         }
-        const data = await response.json();
-        setStocks(data);
+        const newData = await response.json();
+
+        // 只更新变化的行
+        setStocks((prevStocks) => {
+          return newData.map((newStock) => {
+            const existingStock = prevStocks.find((stock) => stock.id === newStock.id);
+            if (existingStock && !isRowDataChanged(existingStock, newStock)) {
+              return existingStock; // 没有变化时，保留现有数据
+            }
+            return newStock; // 如果有变化，更新该行
+          });
+        });
+         // 数据更新成功，清空错误信息
+        setError(null);
       } catch (err) {
         setError(err.message);
-      } finally {
-        setLoading(false);
       }
     };
 
-    fetchStocks();
+    fetchStocks(); // 初始调用
+
+    // 每隔 5 秒调用一次
+    const intervalId = setInterval(fetchStocks, 5000);
+
+    // 在组件卸载时清除定时器
+    return () => clearInterval(intervalId);
   }, [date]);
 
   const handleSort = (column) => {
@@ -37,6 +65,13 @@ const StockTable = ({ date }) => {
     }
   };
 
+  const handleExpandRow = (id) => {
+    setExpandedRows((prev) => ({
+      ...prev,
+      [id]: !prev[id], // 切换展开状态
+    }));
+  };
+
   const sortedStocks = sortColumn
     ? [...stocks].sort((a, b) => {
         if (a[sortColumn] < b[sortColumn]) return sortDirection === 'asc' ? -1 : 1;
@@ -45,7 +80,6 @@ const StockTable = ({ date }) => {
       })
     : stocks;
 
-  if (loading) return <div>Loading...</div>;
   if (error) return <div>Error: {error}</div>;
 
   return (
@@ -77,25 +111,43 @@ const StockTable = ({ date }) => {
             低于10日线
             {sortColumn === 'below10dma' && <i className={`fas fa-sort-${sortDirection}`} />}
           </th>
-          <th scope="col" onClick={() => handleSort('concept')}>
+          <th scope="col" onClick={() => handleSort('concept')} className="concept-column">
             所属概念
             {sortColumn === 'concept' && <i className={`fas fa-sort-${sortDirection}`} />}
           </th>
         </tr>
       </thead>
       <tbody>
-        {sortedStocks.map((stock, index) => (
-          <tr key={stock.id}>
-            <td>{index + 1}</td>
-            <td>{stock.stock_code}</td>
-            <td>{stock.name}</td>
-            <td>{stock.price}</td>
-            <td>{stock.change}%</td>
-            <td>{stock.below_5_day_line ? 'Yes' : 'No'}</td>
-            <td>{stock.below_10_day_line ? 'Yes' : 'No'}</td>
-            <td>{stock.concept}</td>
-          </tr>
-        ))}
+        {sortedStocks.map((stock, index) => {
+          const isExpanded = expandedRows[stock.id];
+          return (
+            <tr key={stock.id}>
+              <td>{index + 1}</td>
+              <td className="ellipsis">{stock.stock_code}</td>
+              <td className="ellipsis">{stock.stock_name}</td>
+              <td className="ellipsis">{stock.price}</td>
+              <td className="ellipsis">{stock.change}%</td>
+              <td>{stock.below_5_day_line ? 'Yes' : 'No'}</td>
+              <td>{stock.below_10_day_line ? 'Yes' : 'No'}</td>
+              <td className="ellipsis concept-column">
+                <span className={isExpanded ? 'expanded' : 'collapsed'}>
+                  {stock.concept}
+                </span>
+                <button className="expand-button" onClick={() => handleExpandRow(stock.id)}>
+                  <svg
+                    className={`arrow-icon ${isExpanded ? 'up' : 'down'}`}
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    width="16"
+                    height="16"
+                  >
+                    <path d={isExpanded ? 'M7 10l5 5 5-5z' : 'M7 14l5-5 5 5z'} />
+                  </svg>
+                </button>
+              </td>
+            </tr>
+          );
+        })}
       </tbody>
     </table>
   );
