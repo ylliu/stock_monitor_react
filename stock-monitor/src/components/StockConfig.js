@@ -10,7 +10,9 @@ const StockConfig = () => {
     circulation_value_range_max: 70,
     second_candle_new_high_days: 10,
     ma10_ratio: 4.2,
-    days_to_ma10: 5
+    days_to_ma10: 5,
+    ma5_trigger:false,
+    ma10_trigger:false
   });
 
   useEffect(() => {
@@ -94,6 +96,33 @@ const StockConfig = () => {
     });
   };
 
+  const handleMa5CheckboxChange = (e) => {
+    setConfig(prevConfig => {
+      const { name, checked } = e.target;
+      const newConfig = { ...prevConfig, ma5_trigger: checked };
+
+      axios.post('http://127.0.0.1:5000/config', newConfig)
+        .then(response => console.log('Config updated:', response.data))
+        .catch(error => console.error('Error updating config:', error));
+
+      return newConfig;
+    });
+  };
+
+  
+  const handleMa10CheckboxChange = (e) => {
+    setConfig(prevConfig => {
+      const { name, checked } = e.target;
+      const newConfig = { ...prevConfig, ma10_trigger: checked };
+
+      axios.post('http://127.0.0.1:5000/config', newConfig)
+        .then(response => console.log('Config updated:', response.data))
+        .catch(error => console.error('Error updating config:', error));
+
+      return newConfig;
+    });
+  };
+  
   return (
     <div className="row my-3">
       <div className="col-12 col-md-4">
@@ -116,6 +145,21 @@ const StockConfig = () => {
           <div className="row">
             <div className="col-sm-3">
               <input type="number" className="form-control text-left" value={config.second_candle_new_high_days} onChange={(e) => handleConfigChange({ ...config, second_candle_new_high_days: e.target.value })} />
+            </div>
+          </div>
+        </div>
+        <div className="form-group">
+          <div className="row align-items-center">
+            <div className="col-sm-9">
+              <span>5日线触发</span>
+            </div>
+            <div className="col-sm-3">
+              <input
+                type="checkbox"
+                name="ema5_trigger"
+                checked={config.ma5_trigger}
+                onChange={handleMa5CheckboxChange}
+              />
             </div>
           </div>
         </div>
@@ -145,6 +189,22 @@ const StockConfig = () => {
             </div>
           </div>
         </div>
+        <div className="form-group">
+          <div className="row align-items-center">
+            <div className="col-sm-9">
+              <span>10日线触发</span>
+            </div>
+            <div className="col-sm-3">
+              <input
+                type="checkbox"
+                name="ema10_trigger"
+                checked={config.ma10_trigger}
+                onChange={handleMa10CheckboxChange}
+              />
+            </div>
+          </div>
+        </div>
+
       </div>
       <div className="col-12 col-md-4">
         <div className="form-group">
