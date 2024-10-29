@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './StockTable.css'; // 引入 CSS 文件
 
-const StockTable = ({ date }) => {
+const StockTable = ({ stocksData }) => {
   const [stocks, setStocks] = useState([]);
   const [sortColumn, setSortColumn] = useState(null);
   const [sortDirection, setSortDirection] = useState(null);
@@ -21,40 +21,33 @@ const StockTable = ({ date }) => {
     );
   };
 
-  useEffect(() => {
-    const fetchStocks = async () => {
-      try {
-        const response = await fetch(`http://127.0.0.1:5000/monitor_records/${date}`);
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
-        }
-        const newData = await response.json();
+  // useEffect(() => {
+  //   const fetchStocks = async () => {
+  //     try {
+  //         const response = await fetch(`http://127.0.0.1:5000/monitor_records/${date}`);
+  //         if (!response.ok) {
+  //             throw new Error('Network response was not ok');
+  //         }
+  //         const newData = await response.json();
 
-        // 只更新变化的行
-        setStocks((prevStocks) => {
-          return newData.map((newStock) => {
-            const existingStock = prevStocks.find((stock) => stock.id === newStock.id);
-            if (existingStock && !isRowDataChanged(existingStock, newStock)) {
-              return existingStock; // 没有变化时，保留现有数据
-            }
-            return newStock; // 如果有变化，更新该行
-          });
-        });
-         // 数据更新成功，清空错误信息
-        setError(null);
-      } catch (err) {
-        setError(err.message);
-      }
-    };
+  //         // 直接替换所有数据
+  //         setStocks(newData);
 
-    fetchStocks(); // 初始调用
+  //         // 数据更新成功，清空错误信息
+  //         setError(null);
+  //     } catch (err) {
+  //         setError(err.message);
+  //     }
+  //   };
 
-    // 每隔 5 秒调用一次
-    const intervalId = setInterval(fetchStocks, 5000);
+  //   fetchStocks(); // 初始调用
 
-    // 在组件卸载时清除定时器
-    return () => clearInterval(intervalId);
-  }, [date]);
+  //   // 每隔 5 秒调用一次
+  //   const intervalId = setInterval(fetchStocks, 500000);
+
+  //   // 在组件卸载时清除定时器
+  //   return () => clearInterval(intervalId);
+  // }, [date]);
 
   const handleSort = (column) => {
     if (sortColumn === column) {
@@ -73,12 +66,12 @@ const StockTable = ({ date }) => {
   };
 
   const sortedStocks = sortColumn
-    ? [...stocks].sort((a, b) => {
+    ? [...stocksData].sort((a, b) => {
         if (a[sortColumn] < b[sortColumn]) return sortDirection === 'asc' ? -1 : 1;
         if (a[sortColumn] > b[sortColumn]) return sortDirection === 'asc' ? 1 : -1;
         return 0;
       })
-    : stocks;
+    : stocksData;
 
   if (error) return <div>Error: {error}</div>;
 
