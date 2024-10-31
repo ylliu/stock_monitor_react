@@ -118,8 +118,8 @@ const StockTable = ({ stocksData }) => {
               <td>{index + 1}</td>
               <td className="ellipsis">{stock.stock_code}</td>
               <td className="ellipsis">{stock.stock_name}</td>
-              <td className="ellipsis">{stock.price}</td>
-              <td className="ellipsis">{stock.change}%</td>
+              <td className="ellipsis">{stock.stock_price}</td>
+              <td className="ellipsis">{stock.stock_change}%</td>
               <td>{stock.below_5_day_line ? 'Yes' : 'No'}</td>
               <td>{stock.below_10_day_line ? 'Yes' : 'No'}</td>
               <td className="ellipsis concept-column">
