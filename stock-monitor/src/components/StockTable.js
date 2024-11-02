@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import './StockTable.css'; // 引入 CSS 文件
+import CandlestickChart from './CandlestickChart'; // 自定义组件用于显示K线图
 
 const StockTable = ({ stocksData }) => {
   const [stocks, setStocks] = useState([]);
@@ -7,6 +8,7 @@ const StockTable = ({ stocksData }) => {
   const [sortDirection, setSortDirection] = useState(null);
   const [error, setError] = useState(null);
   const [expandedRows, setExpandedRows] = useState({}); // 用于记录每行是否展开
+  const [selectedStock, setSelectedStock] = useState(null);
 
   // 比较两个对象是否相等（用于比较行数据）
   const isRowDataChanged = (oldRow, newRow) => {
@@ -73,6 +75,15 @@ const StockTable = ({ stocksData }) => {
       })
     : stocksData;
 
+    const handleMouseOver = (stock) => {
+      setSelectedStock(stock);
+    };
+  
+    const handleMouseOut = () => {
+      setSelectedStock(null);
+    };
+
+
   if (error) return <div>Error: {error}</div>;
 
   return (
@@ -117,7 +128,9 @@ const StockTable = ({ stocksData }) => {
             <tr key={stock.id}>
               <td>{index + 1}</td>
               <td className="ellipsis">{stock.stock_code}</td>
-              <td className="ellipsis">{stock.stock_name}</td>
+               <td className="ellipsis" onMouseOver={() => handleMouseOver(stock)} onMouseOut={handleMouseOut}>
+                {stock.stock_name}
+              </td>
               <td className="ellipsis">{stock.stock_price}</td>
               <td className="ellipsis">{stock.stock_change}%</td>
               <td>{stock.below_5_day_line ? 'Yes' : 'No'}</td>

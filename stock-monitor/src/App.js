@@ -5,6 +5,7 @@ import StockConfig from './components/StockConfig';
 import StockHistory from './components/StockHistory';
 import StockCommand from './components/StockCommand';
 import DatePicker from './components/DatePicker';
+import CandlestickChart from './components/CandlestickChart'
 
 const mockStockHistory = [
   { time: '2023-04-15 10:00:01', code: '000001', description: '5日线回踩预警' },
@@ -44,6 +45,13 @@ const App = () => {
           <div className="card h-100">
             <div className="card-body">
               <StockHistory stockHistory={mockStockHistory} />
+            </div>
+          </div>
+        </div>
+        <div className="col-md-4">
+          <div className="card h-100">
+            <div className="card-body">
+              <CandlestickChart />
             </div>
           </div>
         </div>
