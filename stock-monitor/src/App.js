@@ -6,6 +6,7 @@ import StockHistory from './components/StockHistory';
 import StockCommand from './components/StockCommand';
 import DatePicker from './components/DatePicker';
 import CandlestickChart from './components/CandlestickChart'
+import { createGlobalStyle } from 'styled-components';
 
 const mockStockHistory = [
   { time: '2023-04-15 10:00:01', code: '000001', description: '5日线回踩预警' },
@@ -13,8 +14,15 @@ const mockStockHistory = [
   { time: '2023-04-13 10:00:03', code: '000003', description: '10日线回踩预警' },
 ];
 
+const GlobalStyle = createGlobalStyle`
+  body {
+    font-size: 14px; /* Set your desired font size */
+  }
+`;
 const App = () => {
-  const [selectedDate, setSelectedDate] = useState('2024-10-23');
+  const currentDate = new Date();
+  const formattedCurrentDate = currentDate.toISOString().split('T')[0]; // 格式化为YYYY-MM-DD格式的日期字符串
+  const [selectedDate, setSelectedDate] = useState(formattedCurrentDate);
   const [stocksData, setStocksData] = useState([]);
 
   const handleStartStockSelection = (data) => {
@@ -22,6 +30,8 @@ const App = () => {
   };
 
   return (
+    <>
+     <GlobalStyle />
     <div className="container-fluid">
       <h1 className="my-4">Stock Monitor</h1>
       <DatePicker selectedDate={selectedDate} onChange={setSelectedDate} />
@@ -30,7 +40,7 @@ const App = () => {
           <StockConfig />
         </div>
         <div className="col-md-3">
-          <StockCommand onStockDataUpdate={handleStartStockSelection} />
+          <StockCommand onStockDataUpdate={handleStartStockSelection} selectedDate={selectedDate}/>
         </div>
       </div>
       <div className="row" style={{ marginBottom: '10%' }}>
@@ -48,15 +58,9 @@ const App = () => {
             </div>
           </div>
         </div>
-        <div className="col-md-4">
-          <div className="card h-100">
-            <div className="card-body">
-              <CandlestickChart />
-            </div>
-          </div>
-        </div>
       </div>
     </div>
+    </>
   );
 }
 
