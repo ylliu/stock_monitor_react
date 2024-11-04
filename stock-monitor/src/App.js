@@ -33,7 +33,7 @@ const App = () => {
     <>
      <GlobalStyle />
     <div className="container-fluid">
-      <h1 className="my-4">Stock Monitor</h1>
+      <h4 className="my-4 red-text">牛股助手</h4>
       <DatePicker selectedDate={selectedDate} onChange={setSelectedDate} />
       <div className="row">
         <div className="col-md-9">
