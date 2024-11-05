@@ -30,11 +30,12 @@ const StockConfig = () => {
   }, []);
 
   useEffect(() => {
-    // 在组件挂载时获取配置数据
-    axios.get(`http://${serverIp}:5000/config`)
-      .then(response => setConfig(response.data))
-      .catch(error => console.error('Error fetching config:', error));
-  }, []);
+    if (serverIp) {
+      axios.get(`http://${serverIp}:5000/config`)
+        .then(response => setConfig(response.data))
+        .catch(error => console.error('Error fetching config:', error));
+    }
+  }, [serverIp]);
 
   const handleConfigChange = (newConfig) => {
     setConfig(newConfig);
