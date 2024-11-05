@@ -12,6 +12,16 @@ const StockTable = ({ stocksData }) => {
   const [selectedStock, setSelectedStock] = useState(null);
   const [selectedStockData, setSelectedStockData] = useState(null);
 
+  fetch('ip_server.json')
+  .then(response => response.json())
+  .then(data => {
+    const server_ip = data.server_ip;
+    console.log(server_ip); // 打印从JSON中读取的IP地址
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
+
   const handleSort = (column) => {
     if (sortColumn === column) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
@@ -47,7 +57,7 @@ const StockTable = ({ stocksData }) => {
 
   const fetchStockKInfo = async (stockCode) => {
     try {
-      const response = await axios.get(`http://127.0.0.1:5000/stock_K_info/${stockCode}`);
+      const response = await axios.get(`http://${server_ip}:5000/stock_K_info/${stockCode}`);
       setSelectedStockData(response.data);
     } catch (error) {
       console.error('Error fetching stock K info:', error);

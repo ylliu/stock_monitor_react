@@ -7,12 +7,24 @@ const StockCommand = ({ onStockDataUpdate,selectedDate  }) => {
   const [stocksData, setStocksData] = useState([]);
   const stockCode = '300001.sz'; // 你可以在这里设置默认的股票代码
 
+  fetch('ip_server.json')
+  .then(response => response.json())
+  .then(data => {
+    const server_ip = data.server_ip;
+    console.log(server_ip); // 打印从JSON中读取的IP地址
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
+
+  const server_ip=''
+
   const handleStartStockSelection = () => {
     setIsSelecting(true); // Set isMonitoring to true when starting stock selection
     setIsMonitoring(false);
     clearInterval(intervalId);
     setIntervalId(null);
-    fetch(`http://127.0.0.1:5000/monitor_records/${selectedDate}`, {
+    fetch(`http://${server_ip}:5000/monitor_records/${selectedDate}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -43,7 +55,7 @@ const StockCommand = ({ onStockDataUpdate,selectedDate  }) => {
 
   const fetchData = () => {
     
-    fetch(`http://127.0.0.1:5000/stock_price`, {
+    fetch(`http://${server_ip}:5000/stock_price`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
