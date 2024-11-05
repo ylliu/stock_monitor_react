@@ -7,7 +7,7 @@ const StockCommand = ({ onStockDataUpdate,selectedDate  }) => {
   const [stocksData, setStocksData] = useState([]);
   const stockCode = '300001.sz'; // 你可以在这里设置默认的股票代码
 
-  fetch('../../ip_server.json')
+  fetch('../../server_ip.json')
   .then(response => response.json())
   .then(data => {
     const server_ip = data.server_ip;

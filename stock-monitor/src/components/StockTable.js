@@ -12,7 +12,7 @@ const StockTable = ({ stocksData }) => {
   const [selectedStock, setSelectedStock] = useState(null);
   const [selectedStockData, setSelectedStockData] = useState(null);
 
-  fetch('../../ip_server.json')
+  fetch('../../server_ip.json')
   .then(response => response.json())
   .then(data => {
     const server_ip = data.server_ip;
