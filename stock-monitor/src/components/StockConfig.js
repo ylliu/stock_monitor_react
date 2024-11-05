@@ -14,17 +14,20 @@ const StockConfig = () => {
     ma5_trigger:false,
     ma10_trigger:false
   });
+  
 
   const [serverIp, setServerIp] = useState(null);
-  fetch('./server_ip.json')
-  .then(response => response.json())
-  .then(data => {
-   setServerIp(data.server_ip);
-   console.log(serverIp)
-  })
-  .catch(error => {
-    console.error('Error:', error);
-  });
+  useEffect(() => {
+    fetch('./server_ip.json')
+      .then(response => response.json())
+      .then(data => {
+        setServerIp(data.server_ip);
+        console.log(data.server_ip); // 确保正确获取到 serverIp
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  }, []);
 
   useEffect(() => {
     // 在组件挂载时获取配置数据
