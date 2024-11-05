@@ -1,0 +1,59 @@
+.ellipsis {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100px; /* 控制其他列的宽度，可根据需要调整 */
+  }
+  
+  .concept-column {
+    width: 30%; /* 设置“所属概念”列占比30% */
+  }
+  
+  .collapsed {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: inline-block;
+    max-width: 200px; /* 控制初始状态显示的最大宽度 */
+  }
+  
+  .expanded {
+    white-space: normal;
+    max-width: none; /* 展开时不限制宽度 */
+    overflow: visible; /* 确保全部内容可见 */
+  }
+  
+  .expand-button {
+    background: none;
+    border: none;
+    color: #007bff;
+    cursor: pointer;
+    position: absolute; /* 绝对定位以放置在单元格的右侧 */
+    right: 10px; /* 与单元格右侧保持一定距离 */
+   
+    font-size: 12px; /* 调整按钮字体大小 */
+  }
+  
+.red-row {
+  background-color: #f8d7da; /* 红色背景 */
+  color: #721c24; /* 红色文本 */
+}
+.red-text {
+  color: red;
+}
+
+.candlestick-chart-container {
+  display: flex;
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
+  position: fixed; /* 固定位置 */
+  top: 50%; /* 从顶部50%开始 */
+  left: 50%; /* 从左侧50%开始 */
+  transform: translate(-50%, -50%); /* 将元素向上和向左移动自身的宽高的一半，实现居中 */
+  background-color: white; /* 设置背景色，视需要可调整 */
+  border: 1px solid #ccc; /* 边框样式 */
+  padding: 20px; /* 内边距 */
+  z-index: 1000; /* 确保在最上层 */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* 添加阴影效果 */
+}
+
