@@ -12,23 +12,50 @@ const StockTable = ({ stocksData }) => {
   const [selectedStock, setSelectedStock] = useState(null);
   const [selectedStockData, setSelectedStockData] = useState(null);
   const [serverIp, setServerIp] = useState(null);
-  fetch('./server_ip.json')
-  .then(response => response.json())
-  .then(data => {
-   setServerIp(data.server_ip);
-   console.log(serverIp)
-  })
-  .catch(error => {
-    console.error('Error:', error);
-  });
+
+  // 读取 server_ip.json 配置
+  useEffect(() => {
+    fetch('./server_ip.json')
+      .then(response => response.json())
+      .then(data => {
+        setServerIp(data.server_ip);
+        console.log(serverIp);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+      });
+  }, [serverIp]);
 
   const handleSort = (column) => {
+    // 检查是否为日期列
+    const isDateColumn = column === 'bullish_start_date' || column === 'bullish_end_date';
+  
+    // 更新排序列和方向
     if (sortColumn === column) {
       setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
     } else {
       setSortColumn(column);
       setSortDirection('asc');
     }
+  
+    // 对 stocksData 排序并更新
+    const sortedStocks = [...stocksData].sort((a, b) => {
+      let aValue = a[column];
+      let bValue = b[column];
+  
+      // 如果是日期字段，将值转换为 Date 对象进行比较
+      if (isDateColumn) {
+        aValue = new Date(aValue);
+        bValue = new Date(bValue);
+      }
+  
+      // 根据排序方向进行排序
+      if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+      if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
+      return 0;
+    });
+  
+    setStocks(sortedStocks);
   };
 
   const handleExpandRow = (id) => {
@@ -42,10 +69,14 @@ const StockTable = ({ stocksData }) => {
     return null;
   }
 
+  // 处理排序逻辑
   const sortedStocks = sortColumn
     ? [...stocksData].sort((a, b) => {
-        if (a[sortColumn] < b[sortColumn]) return sortDirection === 'asc' ? -1 : 1;
-        if (a[sortColumn] > b[sortColumn]) return sortDirection === 'asc' ? 1 : -1;
+        let aValue = a[sortColumn];
+        let bValue = b[sortColumn];
+
+        if (aValue < bValue) return sortDirection === 'asc' ? -1 : 1;
+        if (aValue > bValue) return sortDirection === 'asc' ? 1 : -1;
         return 0;
       })
     : stocksData;
@@ -77,42 +108,17 @@ const StockTable = ({ stocksData }) => {
         <thead className="thead-dark">
           <tr>
             <th scope="col">序号</th>
-            <th scope="col" onClick={() => handleSort('code')}>
-              代码
-              {sortColumn === 'code' && <i className={`fas fa-sort-${sortDirection}`} />}
-            </th>
-            <th scope="col" onClick={() => handleSort('name')}>
-              名称
-              {sortColumn === 'name' && <i className={`fas fa-sort-${sortDirection}`} />}
-            </th>
-            <th scope="col" onClick={() => handleSort('price')}>
-              最新价
-              {sortColumn === 'price' && <i className={`fas fa-sort-${sortDirection}`} />}
-            </th>
-            <th scope="col" onClick={() => handleSort('change')}>
-              实时涨幅
-              {sortColumn === 'change' && <i className={`fas fa-sort-${sortDirection}`} />}
-            </th>
-            <th scope="col" onClick={() => handleSort('limit_circ_mv')}>
-              限制流通市值：亿
-              {sortColumn === 'limit_circ_mv' && <i className={`fas fa-sort-${sortDirection}`} />}
-            </th>
-            <th scope="col" onClick={() => handleSort('free_circ_mv')}>
-              自由流通市值：亿
-              {sortColumn === 'free_circ_mv' && <i className={`fas fa-sort-${sortDirection}`} />}
-            </th>
-            <th scope="col" onClick={() => handleSort('below5dma')}>
-              低于5日线
-              {sortColumn === 'below5dma' && <i className={`fas fa-sort-${sortDirection}`} />}
-            </th>
-            <th scope="col" onClick={() => handleSort('below10dma')}>
-              低于10日线
-              {sortColumn === 'below10dma' && <i className={`fas fa-sort-${sortDirection}`} />}
-            </th>
-            <th scope="col" onClick={() => handleSort('concept')} className="concept-column">
-              所属概念
-              {sortColumn === 'concept' && <i className={`fas fa-sort-${sortDirection}`} />}
-            </th>
+            <th scope="col" onClick={() => handleSort('code')}>代码</th>
+            <th scope="col" onClick={() => handleSort('name')}>名称</th>
+            <th scope="col" onClick={() => handleSort('price')}>最新价</th>
+            <th scope="col" onClick={() => handleSort('change')}>实时涨幅</th>
+            <th scope="col" onClick={() => handleSort('limit_circ_mv')}>限制流通市值：亿</th>
+            <th scope="col" onClick={() => handleSort('free_circ_mv')}>自由流通市值：亿</th>
+            <th scope="col" onClick={() => handleSort('below5dma')}>低于5日线</th>
+            <th scope="col" onClick={() => handleSort('below10dma')}>低于10日线</th>
+            <th scope="col" onClick={() => handleSort('bullish_start_date')}>阳线起始日</th>
+            <th scope="col" onClick={() => handleSort('bullish_end_date')}>阳线结束日</th>
+            <th scope="col" onClick={() => handleSort('concept')}>所属概念</th>
           </tr>
         </thead>
         <tbody>
@@ -136,6 +142,8 @@ const StockTable = ({ stocksData }) => {
                 <td className="ellipsis">{stock.free_circ_mv}</td>
                 <td>{stock.below_5_day_line ? '是' : '否'}</td>
                 <td>{stock.below_10_day_line ? '是' : '否'}</td>
+                <td>{stock.bullish_start_date}</td>
+                <td>{stock.bullish_end_date}</td>
                 <td className="ellipsis concept-column">
                   <span className={isExpanded ? 'expanded' : 'collapsed'}>
                     {stock.concept}
