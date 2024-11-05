@@ -15,9 +15,20 @@ const StockConfig = () => {
     ma10_trigger:false
   });
 
+  const [serverIp, setServerIp] = useState(null);
+  fetch('./server_ip.json')
+  .then(response => response.json())
+  .then(data => {
+   setServerIp(data.server_ip);
+   console.log(serverIp)
+  })
+  .catch(error => {
+    console.error('Error:', error);
+  });
+
   useEffect(() => {
     // 在组件挂载时获取配置数据
-    axios.get('http://127.0.0.1:5000/config')
+    axios.get(`http://${serverIp}:5000/config`)
       .then(response => setConfig(response.data))
       .catch(error => console.error('Error fetching config:', error));
   }, []);
@@ -25,7 +36,7 @@ const StockConfig = () => {
   const handleConfigChange = (newConfig) => {
     setConfig(newConfig);
     // 更新配置数据
-    axios.post('http://127.0.0.1:5000/config', newConfig)
+    axios.post(`http://${serverIp}:5000/config`, newConfig)
       .then(response => console.log('Config updated:', response.data))
       .catch(error => console.error('Error updating config:', error));
   };
@@ -36,7 +47,7 @@ const StockConfig = () => {
       const newConfig = { ...prevConfig, ma10_ratio: newMa10Ratio };
 
       // Update configuration on the server
-      axios.post('http://127.0.0.1:5000/config', newConfig)
+      axios.post(`http://${serverIp}:5000/config`, newConfig)
         .then(response => console.log('Config updated:', response.data))
         .catch(error => console.error('Error updating config:', error));
 
@@ -49,7 +60,7 @@ const StockConfig = () => {
       const { name, checked } = e.target;
       const newConfig = { ...prevConfig, ma5_trigger: checked };
 
-      axios.post('http://127.0.0.1:5000/config', newConfig)
+      axios.post(`http://${serverIp}:5000/config`, newConfig)
         .then(response => console.log('Config updated:', response.data))
         .catch(error => console.error('Error updating config:', error));
 
@@ -63,7 +74,7 @@ const StockConfig = () => {
       const { name, checked } = e.target;
       const newConfig = { ...prevConfig, ma10_trigger: checked };
 
-      axios.post('http://127.0.0.1:5000/config', newConfig)
+      axios.post(`http://${serverIp}:5000/config`, newConfig)
         .then(response => console.log('Config updated:', response.data))
         .catch(error => console.error('Error updating config:', error));
 
