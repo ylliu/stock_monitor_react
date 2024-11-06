@@ -128,14 +128,14 @@ const StockTable = ({ stocksData }) => {
               color: stock.below_5_day_line ? 'red' : 'inherit',
             };
             return (
-              <tr key={stock.id} style={rowStyle}>
+              <tr key={stock.id} className={stock.below_5_day_line?'red-row': ''}>
                 <td>{index + 1}</td>
                 <td className="ellipsis">{stock.stock_code}</td>
                 <td className="ellipsis" onMouseOver={() => handleMouseOver(stock)} onMouseOut={handleMouseOut}>
                   {stock.stock_name}
                 </td>
                 <td className="ellipsis">{stock.stock_price}</td>
-                <td className={`ellipsis ${stock.stock_change >= 0 ? 'green-text' : 'red-text'}`}>
+                <td className={`ellipsis ${stock.stock_change >= 0 ? 'red-text' : 'green-text'}`}>
                   {stock.stock_change}%
                 </td>
                 <td className="ellipsis">{stock.limit_circ_mv}</td>
