@@ -26,10 +26,18 @@ const  CandlestickChart =(K_data) => {
         }
       })
     }
+
+    function setVolBarUpColor (upColor) {
+      chart.setStyles({
+        indicator:{
+          bars:[{upColor}]
+        }
+      })
+    }
     setBarUpColor( '#F92855')
     setBarUpBorderColor( '#F92855')
     setBarUpWickColor( '#F92855')
-
+    setVolBarUpColor( '#F92855')
     function setBarDownColor (downColor) {
       chart.setStyles({
         candle:{
@@ -51,11 +59,21 @@ const  CandlestickChart =(K_data) => {
         }
       })
     }
+
+    function setVolBarDownColor (downColor) {
+      chart.setStyles({
+        indicator:{
+          bars:[{downColor}]
+        }
+      })
+    }
+
     setBarDownColor( '#2DC08E')
     setBarDownBorderColor( '#2DC08E')
     setBarDownWickColor( '#2DC08E')
-  
-  
+    setVolBarDownColor('#2DC08E')
+    
+
     chart.createIndicator('MA', false, { id: 'candle_pane' })
     chart.createIndicator('VOL')
     chart.applyNewData(K_data.data)          

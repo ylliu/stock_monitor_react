@@ -177,6 +177,7 @@ const StockTable = ({ stocksData }) => {
           <CandlestickChart data={selectedStockData} />
         </div>
       )}
+      
     </div>
   );
 };
