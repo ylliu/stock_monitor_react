@@ -99,7 +99,7 @@ const StockConfig = () => {
           </div>
         </div>
         <div className="form-group">
-          <label className="d-block mb-2">第二个阳线收盘价达到X交易日新高</label>
+          <label className="d-block mb-2">连阳最高达到x日新高</label>
           <div className="row">
             <div className="col-sm-3">
               <input type="number" className="form-control text-left" value={config.second_candle_new_high_days} onChange={(e) => handleConfigChange({ ...config, second_candle_new_high_days: e.target.value })} />
