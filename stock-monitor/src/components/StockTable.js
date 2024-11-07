@@ -99,6 +99,13 @@ const StockTable = ({ stocksData }) => {
     setSelectedStock(stock);
     fetchStockKInfo(stock.stock_code);
   };
+  const formatDate = (dateString) => {
+    const year = dateString.substring(0, 4); // Extract year
+    const month = dateString.substring(4, 6); // Extract month
+    const day = dateString.substring(6, 8); // Extract day
+  
+    return `${month}${day}`;
+  };
 
   if (error) return <div>Error: {error}</div>;
 
@@ -112,8 +119,8 @@ const StockTable = ({ stocksData }) => {
             <th scope="col" onClick={() => handleSort('name')}>名称</th>
             <th scope="col" onClick={() => handleSort('price')}>最新价</th>
             <th scope="col" onClick={() => handleSort('change')}>实时涨幅</th>
-            <th scope="col" onClick={() => handleSort('limit_circ_mv')}>限制流通市值：亿</th>
-            <th scope="col" onClick={() => handleSort('free_circ_mv')}>自由流通市值：亿</th>
+            <th scope="col" onClick={() => handleSort('limit_circ_mv')}>自由流通市值</th>
+            <th scope="col" onClick={() => handleSort('free_circ_mv')}>流通市值</th>
             <th scope="col" onClick={() => handleSort('below5dma')}>低于5日线</th>
             <th scope="col" onClick={() => handleSort('below10dma')}>低于10日线</th>
             <th scope="col" onClick={() => handleSort('bullish_start_date')}>阳线起始日</th>
@@ -142,8 +149,8 @@ const StockTable = ({ stocksData }) => {
                 <td className="ellipsis">{stock.free_circ_mv}</td>
                 <td>{stock.below_5_day_line ? '是' : '否'}</td>
                 <td>{stock.below_10_day_line ? '是' : '否'}</td>
-                <td>{stock.bullish_start_date}</td>
-                <td>{stock.bullish_end_date}</td>
+                <td>{formatDate(stock.bullish_start_date)}</td>
+                <td>{formatDate(stock.bullish_end_date)}</td>
                 <td className="ellipsis concept-column">
                   <span className={isExpanded ? 'expanded' : 'collapsed'}>
                     {stock.concept}

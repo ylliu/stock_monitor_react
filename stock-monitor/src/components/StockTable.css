@@ -1,3 +1,14 @@
+/* table tr:nth-child(even) {
+  background-color: #dfdbdbbb;
+} */
+td, th {
+  border-right: 1px solid #ccc; /* Add a solid gray border on the right side of each table cell */
+  padding: 4px 6px;
+}
+
+td:last-child, th:last-child {
+  border-right: none; /* Remove the border on the right side of the last table cell in each row and header */
+}
 .ellipsis {
     white-space: nowrap;
     overflow: hidden;
@@ -6,7 +17,7 @@
   }
   
   .concept-column {
-    width: 30%; /* 设置“所属概念”列占比30% */
+    width: 40%; /* 设置“所属概念”列占比30% */
   }
   
   .collapsed {
@@ -14,7 +25,7 @@
     overflow: hidden;
     text-overflow: ellipsis;
     display: inline-block;
-    max-width: 200px; /* 控制初始状态显示的最大宽度 */
+    max-width: 100%; /* 控制初始状态显示的最大宽度 */
   }
   
   .expanded {
@@ -59,4 +70,5 @@
   z-index: 1000; /* 确保在最上层 */
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* 添加阴影效果 */
 }
+
 

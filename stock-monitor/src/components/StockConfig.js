@@ -124,7 +124,7 @@ const StockConfig = () => {
       </div>
       <div className="col-12 col-md-4">
         <div className="form-group">
-          <label className="d-block mb-2">第一个阳线前一天的限制流通市值范围 (单位：亿)</label>
+          <label className="d-block mb-2">爆量前自由流通市值 </label>
           <div className="input-group">
             <div className="col-sm-3">
               <input type="number" className="form-control text-left" value={config.free_float_value_range_min} onChange={(e) => handleConfigChange({ ...config, free_float_value_range_min: e.target.value })} />
@@ -136,7 +136,7 @@ const StockConfig = () => {
           </div>
         </div>
         <div className="form-group">
-          <label className="d-block mb-2">第一个阳线前一天的流通市值范围 (单位：亿)</label>
+          <label className="d-block mb-2">爆量前流通市值</label>
           <div className="input-group">
             <div className="col-sm-3">
               <input type="number" className="form-control text-left" value={config.circulation_value_range_min} onChange={(e) => handleConfigChange({ ...config, circulation_value_range_min: e.target.value })} />

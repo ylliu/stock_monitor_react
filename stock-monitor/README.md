@@ -68,3 +68,16 @@ This section has moved here: [https://facebook.github.io/create-react-app/docs/d
 ### `npm run build` fails to minify
 
 This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+
+
+### new
+1. 第一个改爆量前流通市值 第二个改爆量前自由流通市值 单位不用写 ok
+2. 日期去年年份
+3. 栏目增加框
+4. 概念栏显示宽一些
+5. 显示实时的K线
+6. 新高日期按最后一天的新高算 是否超过指定交易日期
+7. 量能的红绿改下
+8. 表格改自由流通市值跟流通市值 ok
+9. 就是阳线开始后的阴线的量 不能超过阳线最大的交易量
+10. 实现自动更新数据 
