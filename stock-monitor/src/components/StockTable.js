@@ -87,6 +87,9 @@ const StockTable = ({ stocksData }) => {
     setSelectedStockData(null);
   };
 
+  const handleCodeMouseOut = () => {
+    setSelectedStock(null);
+  };
   const fetchStockKInfo = async (stockCode) => {
     try {
       const response = await axios.get(`http://${serverIp}:5000/stock_K_info/${stockCode}`);
@@ -95,9 +98,11 @@ const StockTable = ({ stocksData }) => {
       console.error('Error fetching stock K info:', error);
     }
   };
-
+  const handleCodeMouseOver = (stock) => {
+    setSelectedStock(stock.stock_code);
+  };
   const handleMouseOver = (stock) => {
-    setSelectedStock(stock);
+   
     fetchStockKInfo(stock.stock_code);
   };
   const formatDate = (dateString) => {
@@ -138,7 +143,8 @@ const StockTable = ({ stocksData }) => {
             return (
               <tr key={stock.id} className={stock.below_5_day_line?'red-row': ''}>
                 <td>{index + 1}</td>
-                <td className="ellipsis">{stock.stock_code}</td>
+                <td className="ellipsis" onMouseOver={() => handleCodeMouseOver(stock)} onMouseOut={handleCodeMouseOut}>
+                  {stock.stock_code}</td>
                 <td className="ellipsis" onMouseOver={() => handleMouseOver(stock)} onMouseOut={handleMouseOut}>
                   {stock.stock_name}
                 </td>
@@ -175,15 +181,15 @@ const StockTable = ({ stocksData }) => {
       </table>
       {selectedStock && (
         <div className="candlestick-chart-container">
-          <HQChart stock={selectedStock.stock_code.split('.')[0]} />
+          <HQChart stock={selectedStock} />
         </div>
       )}
 
-      {/* {selectedStockData && (
+      {selectedStockData && (
         <div className="candlestick-chart-container">
           <CandlestickChart data={selectedStockData} />
         </div>
-      )} */}
+      )}
       
     </div>
   );
