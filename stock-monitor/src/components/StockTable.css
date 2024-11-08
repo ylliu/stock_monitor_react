@@ -71,4 +71,24 @@ td:last-child, th:last-child {
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* 添加阴影效果 */
 }
 
+/* 样式调整 */
+.hqchart-tooltip {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);  /* 使元素相对于其自身大小在屏幕中央 */
+  background-color: rgba(0, 0, 0, 0.7);  /* 半透明的背景 */
+  color: white;
+  padding: 20px 30px;  /* 适当的内边距 */
+  border-radius: 5px;
+  font-size: 18px;
+  z-index: 9999;  /* 确保它在页面的最上层 */
+  display: none;  /* 初始时隐藏 */
+}
+
+/* 显示时的样式 */
+.hqchart-tooltip.show {
+  display: block;
+}
+
 

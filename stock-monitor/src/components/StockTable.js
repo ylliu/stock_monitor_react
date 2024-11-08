@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import './StockTable.css'; // 引入 CSS 文件
 import CandlestickChart from './CandlestickChart'; // 自定义组件用于显示K线图
 import axios from 'axios';
+import HQChart from './hqchart';
 
 const StockTable = ({ stocksData }) => {
   const [stocks, setStocks] = useState([]);
@@ -172,11 +173,17 @@ const StockTable = ({ stocksData }) => {
           })}
         </tbody>
       </table>
-      {selectedStockData && (
+      {selectedStock && (
+        <div className="candlestick-chart-container">
+          <HQChart stock={selectedStock.stock_code.split('.')[0]} />
+        </div>
+      )}
+
+      {/* {selectedStockData && (
         <div className="candlestick-chart-container">
           <CandlestickChart data={selectedStockData} />
         </div>
-      )}
+      )} */}
       
     </div>
   );

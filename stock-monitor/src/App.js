@@ -8,6 +8,7 @@ import DatePicker from './components/DatePicker';
 import CandlestickChart from './components/CandlestickChart'
 import { createGlobalStyle } from 'styled-components';
 
+
 const mockStockHistory = [
   { time: '2023-04-15 10:00:01', code: '000001', description: '5日线回踩预警' },
   { time: '2023-04-14 10:00:02', code: '000002', description: '5日线回踩预警' },
