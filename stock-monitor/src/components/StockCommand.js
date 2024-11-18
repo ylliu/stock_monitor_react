@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import StockTable from './StockTable';
 
-const StockCommand = ({ onStockDataUpdate, selectedDate }) => {
+const StockCommand = ({ onStockDataUpdate, selectedDate,selectedBoard}) => {
   const [isSelecting, setIsSelecting] = useState(false);
   const [isMonitoring, setIsMonitoring] = useState(false);
   const [intervalId, setIntervalId] = useState(null);
@@ -44,8 +44,8 @@ const StockCommand = ({ onStockDataUpdate, selectedDate }) => {
     setIsMonitoring(false);
     clearInterval(intervalId); // Stop the monitoring timer
     setIntervalId(null);
-
-    fetch(`http://${serverIp}:5000/monitor_records/${selectedDate}`, {
+    console.log(`selectedcode:${selectedBoard}`)
+    fetch(`http://${serverIp}:5000/monitor_records/${selectedDate}/${selectedBoard}`, {
       method: 'GET',
       headers: { 'Content-Type': 'application/json' },
     })

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-
-const StockConfig = () => {
+import './StockConfig.css'; // 引入 CSS 文件
+const StockConfig = ({ selectedBoard, onBoardChange }) => {
   const [config, setConfig] = useState({
     first_day_vol_ratio: 1.5,
     free_float_value_range_min: 20,
@@ -11,12 +11,13 @@ const StockConfig = () => {
     second_candle_new_high_days: 10,
     ma10_ratio: 1.001,
     days_to_ma10: 10,
-    ma5_trigger:false,
-    ma10_trigger:false
+    ma5_trigger: false,
+    ma10_trigger: false
   });
-  
 
   const [serverIp, setServerIp] = useState(null);
+  
+  
   useEffect(() => {
     fetch('./server_ip.json')
       .then(response => response.json())
@@ -31,16 +32,17 @@ const StockConfig = () => {
 
   useEffect(() => {
     if (serverIp) {
-      axios.get(`http://${serverIp}:5000/config`)
+      axios.get(`http://${serverIp}:5000/config/${selectedBoard}`)
         .then(response => setConfig(response.data))
         .catch(error => console.error('Error fetching config:', error));
     }
   }, [serverIp]);
 
+  
   const handleConfigChange = (newConfig) => {
     setConfig(newConfig);
     // 更新配置数据
-    axios.post(`http://${serverIp}:5000/config`, newConfig)
+    axios.post(`http://${serverIp}:5000/config/${selectedBoard}`, newConfig)
       .then(response => console.log('Config updated:', response.data))
       .catch(error => console.error('Error updating config:', error));
   };
@@ -51,7 +53,7 @@ const StockConfig = () => {
       const newConfig = { ...prevConfig, ma10_ratio: newMa10Ratio };
 
       // Update configuration on the server
-      axios.post(`http://${serverIp}:5000/config`, newConfig)
+      axios.post(`http://${serverIp}:5000/config/${selectedBoard}`, newConfig)
         .then(response => console.log('Config updated:', response.data))
         .catch(error => console.error('Error updating config:', error));
 
@@ -64,7 +66,7 @@ const StockConfig = () => {
       const { name, checked } = e.target;
       const newConfig = { ...prevConfig, ma5_trigger: checked };
 
-      axios.post(`http://${serverIp}:5000/config`, newConfig)
+      axios.post(`http://${serverIp}:5000/config/${selectedBoard}`, newConfig)
         .then(response => console.log('Config updated:', response.data))
         .catch(error => console.error('Error updating config:', error));
 
@@ -72,20 +74,31 @@ const StockConfig = () => {
     });
   };
 
-  
   const handleMa10CheckboxChange = (e) => {
     setConfig(prevConfig => {
       const { name, checked } = e.target;
       const newConfig = { ...prevConfig, ma10_trigger: checked };
 
-      axios.post(`http://${serverIp}:5000/config`, newConfig)
+      axios.post(`http://${serverIp}:5000/config/${selectedBoard}`, newConfig)
         .then(response => console.log('Config updated:', response.data))
         .catch(error => console.error('Error updating config:', error));
 
       return newConfig;
     });
   };
-  
+
+  // Handle changing the selected board
+  const handleBoardChange = (board) => {
+    if (onBoardChange) {
+      onBoardChange(board); // 调用父组件传来的 onBoardChange 方法
+      localStorage.setItem('selectedBoard', board); // 保存选中的板块到 localStorage
+      console.log('Selected board:', board);
+      axios.get(`http://${serverIp}:5000/config/${board}`)
+        .then(response => setConfig(response.data))
+        .catch(error => console.error('Error fetching config:', error));
+    }
+  };
+
   return (
     <div className="row my-3">
       <div className="col-12 col-md-4">
@@ -95,7 +108,6 @@ const StockConfig = () => {
             <div className="col-sm-3">
               <input type="number" step="0.1" className="form-control text-left" value={config.first_day_vol_ratio}  onChange={(e) => handleConfigChange({ ...config, first_day_vol_ratio: e.target.value })} />
             </div>
-           
           </div>
         </div>
         <div className="form-group">
@@ -121,10 +133,25 @@ const StockConfig = () => {
             </div>
           </div>
         </div>
+        <div className="form-group">
+          <div className="row">
+            <div className="col-sm-8">
+              <div className="board-selection">
+                <input
+                  type="checkbox"
+                  checked={selectedBoard === 'main'}
+                  onChange={() => handleBoardChange('main')}
+                  id="mainBoardCheckbox"
+                />
+                <label htmlFor="mainBoardCheckbox" className="ml-2">主板</label>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       <div className="col-12 col-md-4">
         <div className="form-group">
-          <label className="d-block mb-2">爆量前自由流通市值 </label>
+          <label className="d-block mb-2">爆量前自由流通市值</label>
           <div className="input-group">
             <div className="col-sm-3">
               <input type="number" className="form-control text-left" value={config.free_float_value_range_min} onChange={(e) => handleConfigChange({ ...config, free_float_value_range_min: e.target.value })} />
@@ -162,7 +189,22 @@ const StockConfig = () => {
             </div>
           </div>
         </div>
-
+        {/* New Board Selection */}
+        <div className="form-group">
+          <div className="row">
+            <div className="col-sm-8">
+              <div className="board-selection">
+                <input
+                  type="checkbox"
+                  checked={selectedBoard === 'chiNext'}
+                  onChange={() => handleBoardChange('chiNext')}
+                  id="chiNextCheckbox"
+                />
+                <label htmlFor="chiNextCheckbox" className="ml-2">创业板</label>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
       <div className="col-12 col-md-4">
         <div className="form-group">

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import StockTable from './components/StockTable';
 import StockConfig from './components/StockConfig';
@@ -25,11 +25,23 @@ const App = () => {
   const formattedCurrentDate = currentDate.toISOString().split('T')[0]; // 格式化为YYYY-MM-DD格式的日期字符串
   const [selectedDate, setSelectedDate] = useState(formattedCurrentDate);
   const [stocksData, setStocksData] = useState([]);
+  const [selectedBoard, setSelectedBoard] = useState('main'); // 管理选中的板块状态
 
   const handleStartStockSelection = (data) => {
     setStocksData(data);
   };
 
+   // 处理板块切换
+   const handleBoardChange = (board) => {
+    setSelectedBoard(board); // 更新 selectedBoard
+  };
+  useEffect(() => {
+    // 在组件加载时从 localStorage 获取保存的板块选择
+    const savedBoard = localStorage.getItem('selectedBoard');
+    if (savedBoard) {
+      setSelectedBoard(savedBoard); // 如果有保存的板块信息，就使用它
+    }
+  }, []);
   return (
     <>
      <GlobalStyle />
@@ -38,10 +50,11 @@ const App = () => {
       <DatePicker selectedDate={selectedDate} onChange={setSelectedDate} />
       <div className="row">
         <div className="col-md-9">
-          <StockConfig />
+          <StockConfig  selectedBoard={selectedBoard} 
+        onBoardChange={handleBoardChange} />
         </div>
         <div className="col-md-3">
-          <StockCommand onStockDataUpdate={handleStartStockSelection} selectedDate={selectedDate}/>
+          <StockCommand onStockDataUpdate={handleStartStockSelection} selectedDate={selectedDate} selectedBoard={selectedBoard} />
         </div>
       </div>
       <div className="row" style={{ marginBottom: '10%' }}>

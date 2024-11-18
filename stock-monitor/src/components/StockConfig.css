@@ -1,0 +1,15 @@
+/* Expand clickable area by increasing padding */
+.board-selection {
+    display: flex;
+    align-items: center;
+    padding: 10px 0; /* Increased padding for larger clickable area */
+    cursor: pointer;
+  }
+  
+  .board-selection input[type="checkbox"] {
+    margin-right: 10px; /* Space between checkbox and label */
+  }
+  
+  .board-selection label {
+    cursor: pointer; /* Ensure the label is also clickable */
+  }
