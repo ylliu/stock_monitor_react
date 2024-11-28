@@ -234,7 +234,7 @@ const StockConfig = ({ selectedBoard, onBoardChange }) => {
           <label className="d-block mb-2">两日平均振幅</label>
           <div className="row">
             <div className="col-sm-6">
-              <input type="number" className="form-control text-left" value={config.two_positive_pct_avg} onChange={(e) => handleConfigChange({ ...config, two_positive_pct_avg: e.target.value })} />
+              <input type="number" step="0.1" className="form-control text-left" value={config.two_positive_pct_avg} onChange={(e) => handleConfigChange({ ...config, two_positive_pct_avg: e.target.value })} />
             </div>
           </div>
         </div>
