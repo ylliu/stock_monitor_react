@@ -12,7 +12,8 @@ const StockConfig = ({ selectedBoard, onBoardChange }) => {
     ma10_ratio: 1.001,
     days_to_ma10: 10,
     ma5_trigger: false,
-    ma10_trigger: false
+    ma10_trigger: false,
+    two_positive_pct_avg:11
   });
 
   const [serverIp, setServerIp] = useState(null);
@@ -226,6 +227,14 @@ const StockConfig = ({ selectedBoard, onBoardChange }) => {
           <div className="row">
             <div className="col-sm-6">
               <input type="number" className="form-control text-left" value={config.days_to_ma10} onChange={(e) => handleConfigChange({ ...config, days_to_ma10: e.target.value })} />
+            </div>
+          </div>
+        </div>
+        <div className="form-group">
+          <label className="d-block mb-2">两日平均振幅</label>
+          <div className="row">
+            <div className="col-sm-6">
+              <input type="number" className="form-control text-left" value={config.two_positive_pct_avg} onChange={(e) => handleConfigChange({ ...config, two_positive_pct_avg: e.target.value })} />
             </div>
           </div>
         </div>
