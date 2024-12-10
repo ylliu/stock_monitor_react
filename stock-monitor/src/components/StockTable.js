@@ -131,6 +131,7 @@ const StockTable = ({ stocksData }) => {
             <th scope="col" onClick={() => handleSort('below10dma')}>低于10日线</th>
             <th scope="col" onClick={() => handleSort('bullish_start_date')}>阳线起始日</th>
             <th scope="col" onClick={() => handleSort('bullish_end_date')}>阳线结束日</th>
+            <th scope="col" onClick={() => handleSort('max_turnover_rate')}>最大实际换手率</th>
             <th scope="col" onClick={() => handleSort('concept')}>所属概念</th>
           </tr>
         </thead>
@@ -158,6 +159,7 @@ const StockTable = ({ stocksData }) => {
                 <td>{stock.below_10_day_line ? '是' : '否'}</td>
                 <td>{formatDate(stock.bullish_start_date)}</td>
                 <td>{formatDate(stock.bullish_end_date)}</td>
+                <td className="ellipsis">{stock.max_turnover_rate}%</td>
                 <td className="ellipsis concept-column">
                   <span className={isExpanded ? 'expanded' : 'collapsed'}>
                     {stock.concept}
