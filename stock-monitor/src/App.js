@@ -58,17 +58,10 @@ const App = () => {
         </div>
       </div>
       <div className="row" style={{ marginBottom: '10%' }}>
-        <div className="col-md-8">
-          <div className="card h-100">
+        <div className="col-md-12">
+        <div className="card h-100" style={{ minHeight: '200px' }}>
             <div className="card-body">
               <StockTable stocksData={stocksData} />
-            </div>
-          </div>
-        </div>
-        <div className="col-md-4">
-          <div className="card h-100">
-            <div className="card-body">
-              <StockHistory stockHistory={mockStockHistory} />
             </div>
           </div>
         </div>

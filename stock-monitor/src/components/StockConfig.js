@@ -13,7 +13,8 @@ const StockConfig = ({ selectedBoard, onBoardChange }) => {
     days_to_ma10: 10,
     ma5_trigger: false,
     ma10_trigger: false,
-    two_positive_pct_avg:11
+    two_positive_pct_avg:11,
+    min_positive_days:2,
   });
 
   const [serverIp, setServerIp] = useState(null);
@@ -149,6 +150,22 @@ const StockConfig = ({ selectedBoard, onBoardChange }) => {
             </div>
           </div>
         </div>
+        <div className="form-group">
+          <label className="d-block mb-2">最低连阳天数</label>
+          <div className="row">
+            <div className="col-sm-6">
+              <select
+                className="form-control text-left"
+                value={config.min_positive_days}
+                onChange={(e) => handleConfigChange({ ...config, min_positive_days: parseInt(e.target.value, 10) })} // 确保转换为数字
+              >
+                <option value={2}>2</option>
+                <option value={3}>3</option>
+                <option value={4}>4</option>
+              </select>
+            </div>
+          </div>
+        </div>
       </div>
       <div className="col-12 col-md-4">
         <div className="form-group">
@@ -238,6 +255,7 @@ const StockConfig = ({ selectedBoard, onBoardChange }) => {
             </div>
           </div>
         </div>
+        
       </div>
     </div>
   );
