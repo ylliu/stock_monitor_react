@@ -13,6 +13,8 @@ const StockTable = ({ stocksData }) => {
   const [selectedStock, setSelectedStock] = useState(null);
   const [selectedStockData, setSelectedStockData] = useState(null);
   const [serverIp, setServerIp] = useState(null);
+  const [filterBelow5, setFilterBelow5] = useState(false);
+  const [filterBelow10, setFilterBelow10] = useState(true);
 
   // 读取 server_ip.json 配置
   useEffect(() => {
@@ -90,6 +92,14 @@ const StockTable = ({ stocksData }) => {
   const handleCodeMouseOut = () => {
     setSelectedStock(null);
   };
+
+  const filteredStocks = stocksData.filter(stock => {
+    if (filterBelow5 && !filterBelow10) return stock.below_5_day_line;
+    if (!filterBelow5 && filterBelow10) return stock.below_10_day_line;
+    if (filterBelow5 && filterBelow10) return stock.below_5_day_line || stock.below_10_day_line;
+    return true;
+  });
+
   const fetchStockKInfo = async (stockCode) => {
     try {
       const response = await axios.get(`http://${serverIp}:5000/stock_K_info/${stockCode}`);
@@ -117,6 +127,14 @@ const StockTable = ({ stocksData }) => {
 
   return (
     <div>
+       <div className="filters">
+        <label>
+          <input type="checkbox" checked={filterBelow5} onChange={() => setFilterBelow5(!filterBelow5)} /> 5日线触发
+        </label>
+        <label>
+          <input type="checkbox" checked={filterBelow10} onChange={() => setFilterBelow10(!filterBelow10)} /> 10日线触发
+        </label>
+      </div>
       <table className="">
         <thead className="thead-dark">
           <tr>
@@ -146,7 +164,7 @@ const StockTable = ({ stocksData }) => {
               color: stock.below_5_day_line ? 'red' : 'inherit',
             };
             return (
-              <tr key={stock.id} className={stock.below_5_day_line?'red-row': ''}>
+              <tr key={stock.id} className={(stock.below_5_day_line&filterBelow5) | (stock.below_10_day_line&filterBelow10)?'red-row': ''}>
                 <td>{index + 1}</td>
                 <td className="ellipsis" onMouseOver={() => handleCodeMouseOver(stock)} onMouseOut={handleCodeMouseOut}>
                   {stock.stock_code}</td>

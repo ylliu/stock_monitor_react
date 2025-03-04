@@ -130,7 +130,7 @@ const StockConfig = ({ selectedBoard, onBoardChange }) => {
             </div>
           </div>
         </div>
-        <div className="form-group">
+        {/* <div className="form-group">
           <div className="row align-items-center">
             <div className="col-sm-9">
               <span>5日线触发</span>
@@ -144,7 +144,7 @@ const StockConfig = ({ selectedBoard, onBoardChange }) => {
               />
             </div>
           </div>
-        </div>
+        </div> */}
         <div className="form-group">
           <div className="row">
             <div className="col-sm-8">
@@ -202,7 +202,7 @@ const StockConfig = ({ selectedBoard, onBoardChange }) => {
             </div>
           </div>
         </div>
-        <div className="form-group">
+        {/* <div className="form-group">
           <div className="row align-items-center">
             <div className="col-sm-9">
               <span>10日线触发</span>
@@ -216,7 +216,7 @@ const StockConfig = ({ selectedBoard, onBoardChange }) => {
               />
             </div>
           </div>
-        </div>
+        </div> */}
         {/* New Board Selection */}
         <div className="form-group">
           <div className="row">
@@ -258,7 +258,7 @@ const StockConfig = ({ selectedBoard, onBoardChange }) => {
           </div>
         </div>
         <div className="form-group">
-          <label className="d-block mb-2">回踩10日均线后第一个阳线的小于交易日</label>
+          <label className="d-block mb-2">第一个阳线到今天是几天</label>
           <div className="row">
             <div className="col-sm-6">
               <input type="number" className="form-control text-left" value={config.days_to_ma10} onChange={(e) => handleConfigChange({ ...config, days_to_ma10: e.target.value })} />
