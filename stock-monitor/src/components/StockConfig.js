@@ -15,6 +15,7 @@ const StockConfig = ({ selectedBoard, onBoardChange }) => {
     ma10_trigger: false,
     two_positive_pct_avg:11,
     min_positive_days:2,
+    is_margin_stock: false, // 新增字段
   });
 
   const [serverIp, setServerIp] = useState(null);
@@ -100,7 +101,16 @@ const StockConfig = ({ selectedBoard, onBoardChange }) => {
         .catch(error => console.error('Error fetching config:', error));
     }
   };
-
+  const handleMarginCheckboxChange = (e) => {
+    setConfig(prevConfig => {
+      const newConfig = { ...prevConfig, is_margin_stock: e.target.checked };
+      axios.post(`http://${serverIp}:5000/config/${selectedBoard}`, newConfig)
+        .then(response => console.log('Config updated:', response.data))
+        .catch(error => console.error('Error updating config:', error));
+      return newConfig;
+    });
+  };
+  
   return (
     <div className="row my-3">
       <div className="col-12 col-md-4">
@@ -219,6 +229,14 @@ const StockConfig = ({ selectedBoard, onBoardChange }) => {
                   id="chiNextCheckbox"
                 />
                 <label htmlFor="chiNextCheckbox" className="ml-2">创业板</label>
+              </div>
+              <div className="margin-select">
+                <input
+                  type="checkbox"
+                  checked={config.is_margin_stock}
+                  onChange={handleMarginCheckboxChange}
+                />
+                <label className="ml-2">&nbsp;&nbsp;是否为融资标的</label>
               </div>
             </div>
           </div>
