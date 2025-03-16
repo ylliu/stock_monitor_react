@@ -7,6 +7,7 @@ import StockCommand from './components/StockCommand';
 import DatePicker from './components/DatePicker';
 import CandlestickChart from './components/CandlestickChart'
 import { createGlobalStyle } from 'styled-components';
+import ConfigList from './components/ConfigList';
 
 
 const mockStockHistory = [
@@ -26,6 +27,12 @@ const App = () => {
   const [selectedDate, setSelectedDate] = useState(formattedCurrentDate);
   const [stocksData, setStocksData] = useState([]);
   const [selectedBoard, setSelectedBoard] = useState('main'); // 管理选中的板块状态
+  const [selectedConfig, setSelectedConfig] = useState(null);
+
+  // Update the selected config when a user applies a configuration
+  const onConfigSelected = (config) => {
+    setSelectedConfig(config);
+  };
 
   const handleStartStockSelection = (data) => {
     setStocksData(data);
@@ -51,7 +58,9 @@ const App = () => {
       <div className="row">
         <div className="col-md-9">
           <StockConfig  selectedBoard={selectedBoard} 
-        onBoardChange={handleBoardChange} />
+        onBoardChange={handleBoardChange}
+        selectedConfig={selectedConfig} />
+          <ConfigList board={selectedBoard} onConfigSelected={onConfigSelected} />
         </div>
         <div className="col-md-3">
           <StockCommand onStockDataUpdate={handleStartStockSelection} selectedDate={selectedDate} selectedBoard={selectedBoard} />

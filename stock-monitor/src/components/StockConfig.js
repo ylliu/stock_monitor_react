@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import './StockConfig.css'; // 引入 CSS 文件
-const StockConfig = ({ selectedBoard, onBoardChange }) => {
+const StockConfig = ({ selectedBoard, onBoardChange,selectedConfig  }) => {
   const [config, setConfig] = useState({
+    id:1,
     first_day_vol_ratio: 1.5,
     free_float_value_range_min: 20,
     free_float_value_range_max: 30,
@@ -20,7 +21,8 @@ const StockConfig = ({ selectedBoard, onBoardChange }) => {
 
   const [serverIp, setServerIp] = useState(null);
   
-  
+  const [currentConfigId, setCurrentConfigId] = useState(null); // 保存当前配置的 ID
+
   useEffect(() => {
     fetch('./server_ip.json')
       .then(response => response.json())
@@ -33,19 +35,47 @@ const StockConfig = ({ selectedBoard, onBoardChange }) => {
       });
   }, []);
 
-  useEffect(() => {
-    if (serverIp) {
-      axios.get(`http://${serverIp}:5000/config/${selectedBoard}`)
-        .then(response => setConfig(response.data))
-        .catch(error => console.error('Error fetching config:', error));
+   // Fetch the configuration from the server when selectedBoard or selectedConfig changes
+   useEffect(() => {
+    if (selectedConfig) {
+      console.log(selectedConfig)
+      setConfig(selectedConfig); // Update the config state when selected config changes
     }
-  }, [serverIp]);
+  }, [selectedConfig]);
+
+
+   // 根据板块选择查询当前配置的 ID
+   useEffect(() => {
+    if (selectedBoard && serverIp) {
+      axios.get(`http://${serverIp}:5000/config/id/${selectedBoard}`)
+        .then(response => {
+          setCurrentConfigId(response.data.config_id); // 设置当前配置的 ID
+          console.log('Current Config ID:', response.data);
+        })
+        .catch(error => {
+          console.error('Error fetching config ID:', error);
+        });
+    }
+  }, [selectedBoard, serverIp]);
+
+   // 根据配置 ID 获取配置数据
+  useEffect(() => {
+    if (currentConfigId && serverIp) {
+      axios.get(`http://${serverIp}:5000/config/${selectedBoard}/${currentConfigId}`)
+        .then(response => {
+          setConfig(response.data); // 更新配置数据
+        })
+        .catch(error => {
+          console.error('Error fetching config:', error);
+        });
+    }
+  }, [currentConfigId, serverIp, selectedBoard]);
 
   
   const handleConfigChange = (newConfig) => {
     setConfig(newConfig);
     // 更新配置数据
-    axios.post(`http://${serverIp}:5000/config/${selectedBoard}`, newConfig)
+    axios.post(`http://${serverIp}:5000/config/${selectedBoard}/${currentConfigId}`, newConfig)
       .then(response => console.log('Config updated:', response.data))
       .catch(error => console.error('Error updating config:', error));
   };
@@ -56,33 +86,7 @@ const StockConfig = ({ selectedBoard, onBoardChange }) => {
       const newConfig = { ...prevConfig, ma10_ratio: newMa10Ratio };
 
       // Update configuration on the server
-      axios.post(`http://${serverIp}:5000/config/${selectedBoard}`, newConfig)
-        .then(response => console.log('Config updated:', response.data))
-        .catch(error => console.error('Error updating config:', error));
-
-      return newConfig;
-    });
-  };
-
-  const handleMa5CheckboxChange = (e) => {
-    setConfig(prevConfig => {
-      const { name, checked } = e.target;
-      const newConfig = { ...prevConfig, ma5_trigger: checked };
-
-      axios.post(`http://${serverIp}:5000/config/${selectedBoard}`, newConfig)
-        .then(response => console.log('Config updated:', response.data))
-        .catch(error => console.error('Error updating config:', error));
-
-      return newConfig;
-    });
-  };
-
-  const handleMa10CheckboxChange = (e) => {
-    setConfig(prevConfig => {
-      const { name, checked } = e.target;
-      const newConfig = { ...prevConfig, ma10_trigger: checked };
-
-      axios.post(`http://${serverIp}:5000/config/${selectedBoard}`, newConfig)
+      axios.post(`http://${serverIp}:5000/config/${selectedBoard}/${currentConfigId}`, newConfig)
         .then(response => console.log('Config updated:', response.data))
         .catch(error => console.error('Error updating config:', error));
 
@@ -96,7 +100,7 @@ const StockConfig = ({ selectedBoard, onBoardChange }) => {
       onBoardChange(board); // 调用父组件传来的 onBoardChange 方法
       localStorage.setItem('selectedBoard', board); // 保存选中的板块到 localStorage
       console.log('Selected board:', board);
-      axios.get(`http://${serverIp}:5000/config/${board}`)
+      axios.get(`http://${serverIp}:5000/config/${board}/${currentConfigId}`)
         .then(response => setConfig(response.data))
         .catch(error => console.error('Error fetching config:', error));
     }
@@ -104,7 +108,7 @@ const StockConfig = ({ selectedBoard, onBoardChange }) => {
   const handleMarginCheckboxChange = (e) => {
     setConfig(prevConfig => {
       const newConfig = { ...prevConfig, is_margin_stock: e.target.checked };
-      axios.post(`http://${serverIp}:5000/config/${selectedBoard}`, newConfig)
+      axios.post(`http://${serverIp}:5000/config/${selectedBoard}/${currentConfigId}`, newConfig)
         .then(response => console.log('Config updated:', response.data))
         .catch(error => console.error('Error updating config:', error));
       return newConfig;
@@ -130,21 +134,7 @@ const StockConfig = ({ selectedBoard, onBoardChange }) => {
             </div>
           </div>
         </div>
-        {/* <div className="form-group">
-          <div className="row align-items-center">
-            <div className="col-sm-9">
-              <span>5日线触发</span>
-            </div>
-            <div className="col-sm-3">
-              <input
-                type="checkbox"
-                name="ema5_trigger"
-                checked={config.ma5_trigger}
-                onChange={handleMa5CheckboxChange}
-              />
-            </div>
-          </div>
-        </div> */}
+        
         <div className="form-group">
           <div className="row">
             <div className="col-sm-8">
@@ -202,21 +192,7 @@ const StockConfig = ({ selectedBoard, onBoardChange }) => {
             </div>
           </div>
         </div>
-        {/* <div className="form-group">
-          <div className="row align-items-center">
-            <div className="col-sm-9">
-              <span>10日线触发</span>
-            </div>
-            <div className="col-sm-3">
-              <input
-                type="checkbox"
-                name="ema10_trigger"
-                checked={config.ma10_trigger}
-                onChange={handleMa10CheckboxChange}
-              />
-            </div>
-          </div>
-        </div> */}
+
         {/* New Board Selection */}
         <div className="form-group">
           <div className="row">
