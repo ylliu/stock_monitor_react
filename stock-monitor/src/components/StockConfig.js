@@ -10,6 +10,9 @@ const StockConfig = ({ selectedBoard, onBoardChange,selectedConfig  }) => {
     circulation_value_range_min: 50,
     circulation_value_range_max: 70,
     second_candle_new_high_days: 10,
+    max_volume_high_days:20,
+    five_days_max_up_pct:10,
+    ten_days_max_up_pct:20,
     ma10_ratio: 1.001,
     days_to_ma10: 10,
     ma5_trigger: false,
@@ -17,6 +20,7 @@ const StockConfig = ({ selectedBoard, onBoardChange,selectedConfig  }) => {
     two_positive_pct_avg:11,
     min_positive_days:2,
     is_margin_stock: false, // 新增字段
+    is_second_day_price_up:true,
   });
 
   const [serverIp, setServerIp] = useState(null);
@@ -114,6 +118,17 @@ const StockConfig = ({ selectedBoard, onBoardChange,selectedConfig  }) => {
       return newConfig;
     });
   };
+
+  const handleSecondPriceUpCheckboxChange = (e) => {
+    setConfig(prevConfig => {
+      const newConfig = { ...prevConfig, is_second_day_price_up: e.target.checked };
+      axios.post(`http://${serverIp}:5000/config/${selectedBoard}/${currentConfigId}`, newConfig)
+        .then(response => console.log('Config updated:', response.data))
+        .catch(error => console.error('Error updating config:', error));
+      return newConfig;
+    });
+  };
+
   
   return (
     <div className="row my-3">
@@ -166,6 +181,21 @@ const StockConfig = ({ selectedBoard, onBoardChange,selectedConfig  }) => {
             </div>
           </div>
         </div>
+        <div className="form-group">
+          <label className="d-block mb-2">10日涨幅不超过</label>
+          <div className="row">
+            <div className="col-sm-3">
+              <input
+                type="number"
+                step="0.1"
+                className="form-control text-left w-75"  // 控制宽度
+                style={{ minWidth: "150px", padding: "8px" }}  // 进一步调整大小
+                value={config.ten_days_max_up_pct}
+                onChange={(e) => handleConfigChange({ ...config, ten_days_max_up_pct: e.target.value })}
+              />
+            </div>
+          </div>
+        </div>
       </div>
       <div className="col-12 col-md-4">
         <div className="form-group">
@@ -205,6 +235,14 @@ const StockConfig = ({ selectedBoard, onBoardChange,selectedConfig  }) => {
                   id="chiNextCheckbox"
                 />
                 <label htmlFor="chiNextCheckbox" className="ml-2">创业板</label>
+                <span style={{ margin: '0 10px' }}></span> {/* 添加空白间距 */}
+                <input
+                  type="checkbox"
+                  checked={selectedBoard === 'sciNext'}
+                  onChange={() => handleBoardChange('sciNext')}
+                  id="sciNextCheckbox"
+                />
+                <label htmlFor="sciNextCheckbox" className="ml-2">科创板</label>
               </div>
               <div className="margin-select">
                 <input
@@ -214,6 +252,29 @@ const StockConfig = ({ selectedBoard, onBoardChange,selectedConfig  }) => {
                 />
                 <label className="ml-2">&nbsp;&nbsp;是否为融资标的</label>
               </div>
+              <div className="form-group">
+                <label className="d-block mb-2">最高交易量是前面 xx 天内的最高量</label>
+                <div className="row">
+                  <div className="col-sm-3">
+                    <input
+                      type="number"
+                      className="form-control text-left w-75"  // 控制宽度
+                      style={{ minWidth: "150px", padding: "8px" }}  // 进一步调整大小
+                      value={config.max_volume_high_days}
+                      onChange={(e) => handleConfigChange({ ...config, max_volume_high_days: e.target.value })}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="margin-select">
+                <input
+                  type="checkbox"
+                  checked={config.is_second_day_price_up}
+                  onChange={handleSecondPriceUpCheckboxChange}
+                />
+                <label className="ml-2">&nbsp;&nbsp;第二天是否需要上涨</label>
+              </div>
+
             </div>
           </div>
         </div>
@@ -246,6 +307,21 @@ const StockConfig = ({ selectedBoard, onBoardChange,selectedConfig  }) => {
           <div className="row">
             <div className="col-sm-6">
               <input type="number" step="0.1" className="form-control text-left" value={config.two_positive_pct_avg} onChange={(e) => handleConfigChange({ ...config, two_positive_pct_avg: e.target.value })} />
+            </div>
+          </div>
+        </div>
+        <div className="form-group">
+          <label className="d-block mb-2">5日涨幅不超过</label>
+          <div className="row">
+            <div className="col-sm-3">
+              <input
+                type="number"
+                step="0.1"
+                className="form-control text-left w-75"  // 控制宽度
+                style={{ minWidth: "150px", padding: "8px" }}  // 进一步调整大小
+                value={config.five_days_max_up_pct}
+                onChange={(e) => handleConfigChange({ ...config, five_days_max_up_pct: e.target.value })}
+              />
             </div>
           </div>
         </div>

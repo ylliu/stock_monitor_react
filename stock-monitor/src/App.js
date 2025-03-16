@@ -60,10 +60,11 @@ const App = () => {
           <StockConfig  selectedBoard={selectedBoard} 
         onBoardChange={handleBoardChange}
         selectedConfig={selectedConfig} />
-          <ConfigList board={selectedBoard} onConfigSelected={onConfigSelected} />
+         
         </div>
         <div className="col-md-3">
           <StockCommand onStockDataUpdate={handleStartStockSelection} selectedDate={selectedDate} selectedBoard={selectedBoard} />
+          <ConfigList board={selectedBoard} onConfigSelected={onConfigSelected} />
         </div>
       </div>
       <div className="row" style={{ marginBottom: '10%' }}>
