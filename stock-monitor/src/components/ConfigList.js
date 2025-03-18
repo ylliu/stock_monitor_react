@@ -4,11 +4,23 @@ import "bootstrap/dist/css/bootstrap.min.css"; // 引入 Bootstrap 样式
 
 const ConfigList = ({ board, onConfigSelected }) => {
   const [configs, setConfigs] = useState([]);
+  const [serverIp, setServerIp] = useState(null);
 
+  useEffect(() => {
+      fetch('./server_ip.json')
+        .then(response => response.json())
+        .then(data => {
+          setServerIp(data.server_ip);
+          console.log(data.server_ip); // 确保正确获取到 serverIp
+        })
+        .catch(error => {
+          console.error('Error:', error);
+        });
+    }, []);
   // 获取配置列表
   const fetchConfigs = () => {
     axios
-      .get(`http://localhost:5000/config/list${board ? `?board=${board}` : ""}`)
+      .get(`http://${serverIp}:5000/config/list${board ? `?board=${board}` : ""}`)
       .then((response) => {
         setConfigs(response.data);
       })
@@ -23,7 +35,7 @@ const ConfigList = ({ board, onConfigSelected }) => {
   const deleteConfig = (board, id) => {
     if (window.confirm(`确定要删除 ID 为 ${id} 的配置吗？`)) {
       axios
-        .delete(`http://localhost:5000/config/${board}/${id}`)
+        .delete(`http://${serverIp}:5000/config/${board}/${id}`)
         .then(() => {
           fetchConfigs(); // 删除后重新获取配置列表
         })
@@ -33,7 +45,7 @@ const ConfigList = ({ board, onConfigSelected }) => {
 
   const applyConfig = (board, id) => {
     axios
-      .post(`http://localhost:5000/config/apply/${board}/${id}`)
+      .post(`http://${serverIp}:5000/config/apply/${board}/${id}`)
       .then(() => {
         setConfigs(
           configs.map((config) => ({
@@ -44,7 +56,7 @@ const ConfigList = ({ board, onConfigSelected }) => {
 
         // Fetch the configuration details for the selected config
         axios
-          .get(`http://localhost:5000/config/${board}/${id}`)
+          .get(`http://${serverIp}:5000/config/${board}/${id}`)
           .then((response) => {
             onConfigSelected(response.data); // Pass selected config to the parent component
           })
@@ -76,7 +88,7 @@ const ConfigList = ({ board, onConfigSelected }) => {
     };
 
     axios
-      .post(`http://localhost:5000/config/${board}/999999`, newConfigData)
+      .post(`http://${serverIp}:5000/config/${board}/999999`, newConfigData)
       .then((response) => {
         fetchConfigs(); // 新增后重新获取配置列表
       })
