@@ -16,7 +16,7 @@ const ConfigList = ({ board, onConfigSelected }) => {
         .catch(error => {
           console.error('Error:', error);
         });
-    }, [serverIp]);
+    }, []);
   // 获取配置列表
   const fetchConfigs = () => {
     axios
@@ -29,7 +29,7 @@ const ConfigList = ({ board, onConfigSelected }) => {
 
   useEffect(() => {
     fetchConfigs();
-  }, [board]);
+  }, [board,serverIp]);
 
   // 删除配置项
   const deleteConfig = (board, id) => {
