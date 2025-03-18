@@ -16,7 +16,7 @@ const ConfigList = ({ board, onConfigSelected }) => {
         .catch(error => {
           console.error('Error:', error);
         });
-    }, []);
+    }, [serverIp]);
   // 获取配置列表
   const fetchConfigs = () => {
     axios
@@ -74,7 +74,7 @@ const ConfigList = ({ board, onConfigSelected }) => {
       circulation_value_range_min: 50,
       circulation_value_range_max: 800,
       second_candle_new_high_days: 10,
-      ma10_ratio: 0.05,
+      ma10_ratio: 1.004,
       days_to_ma10: 20,
       ma5_trigger: 1,
       ma10_trigger: 1,
