@@ -85,6 +85,7 @@ const ConfigList = ({ board, onConfigSelected }) => {
       five_days_max_up_pct:10,
       ten_days_max_up_pct:20,
       is_second_day_price_up:true,
+      config_name:'方案XX'
     };
 
     axios
@@ -129,6 +130,7 @@ const ConfigList = ({ board, onConfigSelected }) => {
         <thead className="table-light">
           <tr>
             <th>ID</th>
+            <th>名称</th>
             <th>板块</th>
             <th className="text-center">操作</th>
           </tr>
@@ -144,6 +146,7 @@ const ConfigList = ({ board, onConfigSelected }) => {
             filteredConfigs.map((config) => (
               <tr key={config.id} className={config.is_applied ? "table-success" : ""}>
                 <td>{config.id}</td>
+                <td>{config.config_name}</td>
                 <td>{config.board === "main" ? "主板" : config.board === "chiNext" ? "创业板" : "科创板"}</td>
                 <td className="text-center">
                   <button

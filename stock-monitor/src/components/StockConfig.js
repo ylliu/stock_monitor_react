@@ -21,6 +21,7 @@ const StockConfig = ({ selectedBoard, onBoardChange,selectedConfig  }) => {
     min_positive_days:2,
     is_margin_stock: false, // 新增字段
     is_second_day_price_up:true,
+    config_name:''
   });
 
   const [serverIp, setServerIp] = useState(null);
@@ -192,6 +193,20 @@ const StockConfig = ({ selectedBoard, onBoardChange,selectedConfig  }) => {
                 style={{ minWidth: "150px", padding: "8px" }}  // 进一步调整大小
                 value={config.ten_days_max_up_pct}
                 onChange={(e) => handleConfigChange({ ...config, ten_days_max_up_pct: e.target.value })}
+              />
+            </div>
+          </div>
+        </div>
+        <div className="form-group">
+          <label className="d-block mb-2">方案名称</label>
+          <div className="row">
+            <div className="col-sm-3">
+              <input
+                type="text"
+                className="form-control text-left w-75"  // 控制宽度
+                style={{ minWidth: "150px", padding: "8px" }}  // 进一步调整大小
+                value={config.config_name}
+                onChange={(e) => handleConfigChange({ ...config, config_name: e.target.value })}
               />
             </div>
           </div>
