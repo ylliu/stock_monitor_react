@@ -7,7 +7,7 @@ const BacktestInterface = ({ onBack }) => {
     startDate: '',
     endDate: '',
     marketBoard: '',
-    initialCapital: 5 // 默认5日均线
+    tirgger_cost: 5 // 默认5日均线
   });
   
   const [serverIp, setServerIp] = useState(null);
@@ -16,31 +16,75 @@ const BacktestInterface = ({ onBack }) => {
   const [selectedStocks, setSelectedStocks] = useState([]);
   const [strategies, setStrategies] = useState([]);
 
-  // 从localStorage加载配置
-  const loadConfigFromStorage = () => {
-    try {
-      const savedConfig = localStorage.getItem('backtestConfig');
-      const savedResults = localStorage.getItem('backtestResults');
-      const savedStrategies = localStorage.getItem('strategies');
-      
-      if (savedConfig) {
-        const parsedConfig = JSON.parse(savedConfig);
-        setBacktestConfig(parsedConfig);
-      }
-      
-      if (savedResults) {
-        const parsedResults = JSON.parse(savedResults);
-        setBacktestResults(parsedResults);
-      }
-      
-      if (savedStrategies) {
-        const parsedStrategies = JSON.parse(savedStrategies);
-        setStrategies(parsedStrategies);
-      }
-    } catch (error) {
-      console.error('Error loading from localStorage:', error);
+  // 计算统计信息
+  const calculateStatistics = (stockPool) => {
+    if (!stockPool || stockPool.length === 0) {
+      return {
+        totalCount: 0,
+        successCount: 0,
+        failureCount: 0,
+        avgMaxRate: 0,
+        successRate: 0
+      };
     }
+
+    const totalCount = stockPool.length;
+    const successCount = stockPool.filter(stock => stock.hold_max_rate >= 0).length;
+    const failureCount = totalCount - successCount;
+    
+    // 计算平均最高收益率
+    const validRates = stockPool.filter(stock => stock.hold_max_rate != null);
+    const avgMaxRate = validRates.length > 0 
+      ? validRates.reduce((sum, stock) => sum + stock.hold_max_rate, 0) / validRates.length 
+      : 0;
+    
+    const successRate = totalCount > 0 ? (successCount / totalCount) * 100 : 0;
+
+    return {
+      totalCount,
+      successCount,
+      failureCount,
+      avgMaxRate,
+      successRate
+    };
   };
+
+  // 修改后的 loadConfigFromStorage 函数，添加验证日志
+const loadConfigFromStorage = () => {
+  console.log("开始加载配置...");
+  try {
+    const savedConfig = localStorage.getItem('backtestConfig');
+    const savedResults = localStorage.getItem('backtestResults');
+    const savedStrategies = localStorage.getItem('strategies');
+    
+    if (savedConfig) {
+      const parsedConfig = JSON.parse(savedConfig);
+      console.log('从localStorage加载的配置:', parsedConfig);
+      console.log('从localStorage加载的策略ID:', parsedConfig.strategy);
+      setBacktestConfig(parsedConfig);
+    }
+    
+    if (savedResults) {
+      const parsedResults = JSON.parse(savedResults);
+      setBacktestResults(parsedResults);
+    }
+    
+    if (savedStrategies) {
+      const parsedStrategies = JSON.parse(savedStrategies);
+      setStrategies(parsedStrategies);
+    }
+  } catch (error) {
+    console.error('Error loading from localStorage:', error);
+  }
+};
+
+// 添加一个useEffect来监听backtestConfig变化
+useEffect(() => {
+  console.log('backtestConfig更新:', backtestConfig);
+  if (backtestConfig.strategy) {
+    console.log('当前策略ID:', backtestConfig.strategy);
+  }
+}, [backtestConfig]);
 
   // 保存配置到localStorage
   const saveConfigToStorage = (config) => {
@@ -87,22 +131,45 @@ const BacktestInterface = ({ onBack }) => {
     loadConfigFromStorage();
   }, []);
 
-  // 通用配置更新函数
-  const handleConfigChange = (key, value) => {
-    const newConfig = {
-      ...backtestConfig,
-      [key]: value,
-      // 选择板块后保持策略选择，除非策略不属于新板块
-      ...(key === 'marketBoard' ? { 
-        strategy: strategies.some(s => s.id === parseInt(backtestConfig.strategy) && s.board === value) 
-          ? backtestConfig.strategy 
-          : '' 
-      } : {})
-    };
-    
-    setBacktestConfig(newConfig);
-    saveConfigToStorage(newConfig);
+ // 修改后的 handleConfigChange 函数
+const handleConfigChange = (key, value) => {
+  const newConfig = {
+    ...backtestConfig,
+    [key]: value,
+    // 如果你希望在板块切换时保留策略ID，可以注释掉下面的逻辑
+    // 或者改为只在策略确实不存在时才重置
+    ...(key === 'marketBoard' ? { 
+      // 保留策略ID，不管板块如何变化
+      // strategy: backtestConfig.strategy
+      
+      // 或者使用原来的逻辑：只有当策略不属于新板块时才重置
+      strategy: strategies.some(s => s.id === parseInt(backtestConfig.strategy) && s.board === value) 
+        ? backtestConfig.strategy 
+        : '' 
+    } : {})
   };
+  
+  // 这里打印的是旧值，因为setState是异步的
+  console.log('当前策略ID (旧值):', backtestConfig.strategy);
+  // 应该打印新值
+  console.log('即将保存的策略ID (新值):', newConfig.strategy);
+  
+  setBacktestConfig(newConfig);
+  saveConfigToStorage(newConfig); // 这里已经在保存策略ID了
+  
+  // 如果是策略选择，可以在这里添加额外的日志
+  if (key === 'strategy') {
+    console.log('策略ID已保存到localStorage:', value);
+    // 立即验证是否保存成功
+    setTimeout(() => {
+      const saved = localStorage.getItem('backtestConfig');
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        console.log('验证：localStorage中的策略ID:', parsed.strategy);
+      }
+    }, 100);
+  }
+};
 
   // 监听 marketBoard 变化后调用接口获取策略列表
   useEffect(() => {
@@ -167,7 +234,7 @@ const BacktestInterface = ({ onBack }) => {
     
     try {
       // 调用监控记录接口获取股票池
-      const response = await fetch(`http://${serverIp}:5000/monitor_records/${backtestConfig.endDate}/${backtestConfig.marketBoard}`, {
+      const response = await fetch(`http://${serverIp}:5000/run_backtest/${backtestConfig.endDate}/${backtestConfig.marketBoard}/${backtestConfig.strategy}/${backtestConfig.tirgger_cost}`, {
         method: 'GET',
         headers: { 'Content-Type': 'application/json' },
       });
@@ -228,7 +295,7 @@ const BacktestInterface = ({ onBack }) => {
         marketBoard: backtestConfig.marketBoard || 'main',
         // 保持其他配置不变
         strategy: backtestConfig.strategy || '',
-        initialCapital: backtestConfig.initialCapital || 5
+        tirgger_cost: backtestConfig.tirgger_cost || 5
       };
       
       setBacktestConfig(newConfig);
@@ -315,8 +382,8 @@ const BacktestInterface = ({ onBack }) => {
                 <label className="form-label">均线成本价格</label>
                 <select
                   className="form-select"
-                  value={backtestConfig.initialCapital}
-                  onChange={(e) => handleConfigChange('initialCapital', Number(e.target.value))}
+                  value={backtestConfig.tirgger_cost}
+                  onChange={(e) => handleConfigChange('tirgger_cost', Number(e.target.value))}
                 >
                   <option value={5}>5日均线</option>
                   <option value={10}>10日均线</option>
@@ -366,20 +433,58 @@ const BacktestInterface = ({ onBack }) => {
               </div>
               <div className="card-body">
                 {/* 股票池统计信息 */}
-                <div className="row mb-3">
+                <div className="row mb-4">
+                  <div className="col-md-3">
+                    <div className="card border-0 bg-light">
+                      <div className="card-body text-center">
+                        <h6 className="mb-1">总触发数量</h6>
+                        <h4 className="text-primary mb-0">{calculateStatistics(backtestResults.stockPool).totalCount}</h4>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-md-3">
+                    <div className="card border-0 bg-light">
+                      <div className="card-body text-center">
+                        <h6 className="mb-1">成功数量</h6>
+                        <h4 className="text-success mb-0">{calculateStatistics(backtestResults.stockPool).successCount}</h4>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-md-3">
+                    <div className="card border-0 bg-light">
+                      <div className="card-body text-center">
+                        <h6 className="mb-1">失败数量</h6>
+                        <h4 className="text-danger mb-0">{calculateStatistics(backtestResults.stockPool).failureCount}</h4>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="col-md-3">
+                    <div className="card border-0 bg-light">
+                      <div className="card-body text-center">
+                        <h6 className="mb-1">成功率</h6>
+                        <h4 className="text-info mb-0">{calculateStatistics(backtestResults.stockPool).successRate.toFixed(1)}%</h4>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* 平均收益率统计 */}
+                <div className="row mb-4">
                   <div className="col-md-6">
                     <div className="card border-0 bg-light">
-                      <div className="card-body">
-                        <h6>总股票数量</h6>
-                        <h4 className="text-primary">{backtestResults.stockPool.length}</h4>
+                      <div className="card-body text-center">
+                        <h6 className="mb-1">平均最高收益率</h6>
+                        <h4 className={`mb-0 ${calculateStatistics(backtestResults.stockPool).avgMaxRate >= 0 ? 'text-danger' : 'text-success'}`}>
+                          {calculateStatistics(backtestResults.stockPool).avgMaxRate.toFixed(2)}%
+                        </h4>
                       </div>
                     </div>
                   </div>
                   <div className="col-md-6">
                     <div className="card border-0 bg-light">
-                      <div className="card-body">
-                        <h6>选择策略</h6>
-                        <h6 className="text-info">
+                      <div className="card-body text-center">
+                        <h6 className="mb-1">选择策略</h6>
+                        <h6 className="text-info mb-0">
                           {strategies.find(s => s.id === parseInt(backtestResults.strategy))?.config_name || '未知策略'}
                         </h6>
                       </div>
@@ -401,6 +506,7 @@ const BacktestInterface = ({ onBack }) => {
                         <th>成本价</th>
                         <th>持有最高价</th>
                         <th>持有最高收益率</th>
+                        <th>结果</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -408,19 +514,35 @@ const BacktestInterface = ({ onBack }) => {
                         <tr key={stock.code || index}>
                           <td>{index + 1}</td>
                           <td>{stock.stock_name || '-'}</td>
-                          <td className="text-success">
+                          <td>
                             {formatDate(stock.bullish_start_date)}
                           </td>
-                          <td className="text-success">
+                          <td>
                             {formatDate(stock.bullish_end_date)}
                           </td>
-                          <td className="text-success">
+                          <td className="text-danger">
                             {formatDate(stock.tigger_date)}
                           </td>
-                         
                           <td>{stock.cost_price || '-'}</td>
                           <td>{stock.hold_max_price || '-'}</td>
-                          <td>{stock.hold_max_rate || '-'}</td>
+                          <td className={
+                            stock.hold_max_rate > 0
+                              ? 'text-danger'   // 红色：上涨
+                              : stock.hold_max_rate < 0
+                                ? 'text-success' // 绿色：下跌
+                                : ''
+                          }>
+                            {stock.hold_max_rate != null ? stock.hold_max_rate.toFixed(2) + '%' : '-'}
+                          </td>
+                          <td>
+                            {stock.hold_max_rate != null ? (
+                              <span className={`badge ${stock.hold_max_rate >= 0 ? 'bg-success' : 'bg-danger'}`}>
+                                {stock.hold_max_rate >= 0 ? '成功' : '失败'}
+                              </span>
+                            ) : (
+                              <span className="badge bg-secondary">未知</span>
+                            )}
+                          </td>
                         </tr>
                       ))}
                     </tbody>
