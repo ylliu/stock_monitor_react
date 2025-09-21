@@ -21,7 +21,9 @@ const StockConfig = ({ selectedBoard, onBoardChange,selectedConfig  }) => {
     min_positive_days:2,
     is_margin_stock: false, // 新增字段
     is_second_day_price_up:true,
-    config_name:''
+    config_name:'',
+    has_limit_up:false,
+    limit_up_days:12,
   });
 
   const [serverIp, setServerIp] = useState(null);
@@ -113,6 +115,16 @@ const StockConfig = ({ selectedBoard, onBoardChange,selectedConfig  }) => {
   const handleMarginCheckboxChange = (e) => {
     setConfig(prevConfig => {
       const newConfig = { ...prevConfig, is_margin_stock: e.target.checked };
+      axios.post(`http://${serverIp}:5000/config/${selectedBoard}/${currentConfigId}`, newConfig)
+        .then(response => console.log('Config updated:', response.data))
+        .catch(error => console.error('Error updating config:', error));
+      return newConfig;
+    });
+  };
+
+  const handleLimitUpCheckboxChange = (e) => {
+    setConfig(prevConfig => {
+      const newConfig = { ...prevConfig, has_limit_up: e.target.checked };
       axios.post(`http://${serverIp}:5000/config/${selectedBoard}/${currentConfigId}`, newConfig)
         .then(response => console.log('Config updated:', response.data))
         .catch(error => console.error('Error updating config:', error));
@@ -288,6 +300,26 @@ const StockConfig = ({ selectedBoard, onBoardChange,selectedConfig  }) => {
                   onChange={handleSecondPriceUpCheckboxChange}
                 />
                 <label className="ml-2">&nbsp;&nbsp;第二天是否需要上涨</label>
+              </div>
+
+              <div className="margin-select mt-2">
+                {/* 新增：最近xx天内有无涨停 */}
+                <input
+                  type="checkbox"
+                  checked={config.has_limit_up}
+                  onChange={handleLimitUpCheckboxChange}
+                />
+                <label className="ml-2">&nbsp;&nbsp;是否有涨停</label>
+                <p></p>
+                <label className="ml-2">最近XX天内有无涨停</label>
+                <input
+                  type="number"
+                  value={config.limit_up_days}
+                  onChange={(e) => handleConfigChange({ ...config, limit_up_days: e.target.value })}
+                  className="ml-2 p-1 border rounded w-16"
+                  placeholder="天数"
+                />
+               
               </div>
 
             </div>
